@@ -1,6 +1,7 @@
 package com.example.user.texigo.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.user.texigo.Activity.DestinationDetails;
 import com.example.user.texigo.Model.FlightModel;
 import com.example.user.texigo.R;
 
@@ -53,7 +55,7 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
-        FlightModel flight = destinationList.get(position);
+        final FlightModel flight = destinationList.get(position);
         holder.place.setText(flight.getName());
         holder.country.setText(flight.getStateName() == null ? flight.getName().toUpperCase() : flight.getStateName().toUpperCase());
         holder.price.setText("from ₹"+flight.getPrice());
@@ -69,6 +71,14 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
         holder.destinationCategory.setText(category);
         // loading album cover using Glide library
         Glide.with(mContext).load(flight.getImage()).into(holder.thumbnail);
+        holder.thumbnail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, DestinationDetails.class);
+                intent.putExtra("FLIGHT_MODEL", flight);
+                mContext.startActivity(intent);
+            }
+        });
 
     }
 

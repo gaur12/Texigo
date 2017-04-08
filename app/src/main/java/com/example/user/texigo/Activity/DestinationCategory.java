@@ -14,6 +14,7 @@ import com.example.user.texigo.Fragment.HistoryFragment;
 import com.example.user.texigo.Model.FlightModel;
 import com.example.user.texigo.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DestinationCategory extends AppCompatActivity {
@@ -25,6 +26,7 @@ public class DestinationCategory extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_destination_category);
+        destinationList = new ArrayList<>();
         if (null != getIntent()) {
             destinationList = getIntent().getParcelableArrayListExtra("DESTINATION_LISTS");
         }

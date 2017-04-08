@@ -2,4 +2,8 @@
     <string name="app_name">Texigo</string>
     <string name="backdrop_title">LOVE TRAVELLING</string>
     <string name="from">from</string>
+    <string name="about">About</string>
+    <string name="how_to_raech">How To Reach</string>
+    <string name="why_to_visit">Why To Visit</string>
+    <string name="coming_soon">Comin Soon...</string>
 </resources>

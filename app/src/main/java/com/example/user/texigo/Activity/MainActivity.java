@@ -3,6 +3,7 @@ package com.example.user.texigo.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,7 @@ import com.example.user.texigo.Rest.ApiService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,6 +67,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onPause(){
+        super.onPause();
+        handler.removeCallbacks(runnable);
+    }
+
     private void prepareDestinations() {
         pd.show();
         if (Gac.getInstance().isNetworkAvailable()) {
@@ -74,18 +82,18 @@ public class MainActivity extends AppCompatActivity {
             call.enqueue(new Callback<DiscoverDataModel>() {
                 @Override
                 public void onResponse(Call<DiscoverDataModel> call, Response<DiscoverDataModel> response) {
-                    pd.hide();
-                    createCover(response);
+                    pd.dismiss();
                     destinationList.clear();
                     destinationList.addAll(response.body().getData().getFlight());
                     destinationList.addAll(response.body().getData().getBudgetFlight());
+                    createCover(destinationList, destinationList.size()-1);
                     adapter.notifyDataSetChanged();
                 }
 
                 @Override
                 public void onFailure(Call<DiscoverDataModel> call, Throwable t) {
                     // Log error here since request failed
-                    pd.hide();
+                    pd.dismiss();
                 }
             });
             adapter.notifyDataSetChanged();
@@ -94,12 +102,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void createCover(Response<DiscoverDataModel> response) {
+    Handler handler;
+    Runnable runnable;
+    private void createCover(final List<FlightModel> list, int index) {
         try {
-            Glide.with(this).load(response.body().getData().getFlight().get(0).getImage()).into((ImageView) findViewById(R.id.backdrop));
+            Glide.with(this).load(list.get(index).getImage()).into((ImageView) findViewById(R.id.backdrop));
         } catch (Exception e) {
             e.printStackTrace();
         }
+        handler = new Handler();
+        if (runnable != null)
+            handler.removeCallbacks(runnable);
+        runnable = new Runnable() {
+
+            @Override
+            public void run() {
+                //TODO: update image here
+                createCover(list, new Random().nextInt(list.size()));
+            }
+        };
+        handler.postDelayed(runnable, 5000);
     }
 
     private void initCollapsingToolbar() {

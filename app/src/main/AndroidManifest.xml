@@ -23,7 +23,10 @@
         <activity
             android:name=".Activity.DestinationCategory"
             android:parentActivityName=".Activity.MainActivity"
-            android:theme="@style/AppThemeNormal"/>
+            android:theme="@style/AppThemeNormal" />
+        <activity
+            android:name=".Activity.DestinationDetails"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

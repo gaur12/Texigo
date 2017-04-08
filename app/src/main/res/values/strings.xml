@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Texigo</string>
     <string name="backdrop_title">LOVE TRAVELLING</string>
+    <string name="from">from</string>
 </resources>

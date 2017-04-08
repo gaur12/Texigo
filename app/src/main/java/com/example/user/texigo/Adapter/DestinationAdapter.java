@@ -24,13 +24,15 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
     private List<FlightModel> destinationList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView place, country;
+        public TextView place, country, price, destinationCategory;
         public ImageView thumbnail;
 
         public MyViewHolder(View view) {
             super(view);
             place = (TextView) view.findViewById(R.id.place);
+            price = (TextView) view.findViewById(R.id.price);
             country = (TextView) view.findViewById(R.id.country);
+            destinationCategory = (TextView) view.findViewById(R.id.destination_category);
             thumbnail = (ImageView) view.findViewById(R.id.thumbnail);
         }
     }
@@ -54,9 +56,20 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
         FlightModel flight = destinationList.get(position);
         holder.place.setText(flight.getName());
         holder.country.setText(flight.getStateName() == null ? flight.getName().toUpperCase() : flight.getStateName().toUpperCase());
-
+        holder.price.setText("from ₹"+flight.getPrice());
+        List<String> destinationCategories = flight.getDestinationCategories();
+        if (destinationCategories.contains("Destination")) destinationCategories.remove("Destination");
+        if (destinationCategories.contains("Things To Do")) destinationCategories.remove("Things To Do");
+        if (destinationCategories.contains("Places To Visit")) destinationCategories.remove("Places To Visit");
+        if (destinationCategories.contains("Weekend Gateway")) destinationCategories.remove("Weekend Gateway");
+        if (destinationCategories.size() > 1) destinationCategories.remove("City");
+        String category = "";
+        if (destinationCategories.size() > 0) category = destinationCategories.get(0);
+        if (destinationCategories.size() > 1) category = category + " . " + destinationCategories.get(1);
+        holder.destinationCategory.setText(category);
         // loading album cover using Glide library
         Glide.with(mContext).load(flight.getImage()).into(holder.thumbnail);
+
     }
 
     @Override

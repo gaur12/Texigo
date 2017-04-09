@@ -1,26 +1,33 @@
 package com.example.user.texigo.Activity;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.user.texigo.Adapter.AutoCompleteAdapter;
 import com.example.user.texigo.Gac;
+import com.example.user.texigo.Model.AutoCompleteSuggest;
 import com.example.user.texigo.Model.DestinationDetail;
 import com.example.user.texigo.Model.DestinationDetailsData;
 import com.example.user.texigo.Model.FlightModel;
 import com.example.user.texigo.R;
 import com.example.user.texigo.Rest.ApiService;
+import com.example.user.texigo.Util.DelayAutoCompleteTextView;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,6 +38,7 @@ public class DestinationDetails extends AppCompatActivity {
     private FlightModel flightModel;
     private ProgressDialog pd;
     DestinationDetail detail;
+    private int originXid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +62,8 @@ public class DestinationDetails extends AppCompatActivity {
     }
 
     private void prepareDestinationDetails() {
-        pd.show();
         if (Gac.getInstance().isNetworkAvailable()) {
+            pd.show();
             String entityId = flightModel.getCityId();
             ApiService apiService = Gac.getInstance().getRestClient().getApiService();
 
@@ -205,7 +213,41 @@ public class DestinationDetails extends AppCompatActivity {
         });
     }
 
+    DelayAutoCompleteTextView originTitle;
     public void moveToRouteScreen(View view) {
+        LayoutInflater inflater = LayoutInflater.from(DestinationDetails.this);
+        View dialogLayout = inflater.inflate(R.layout.custom_dialog, null);
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(DestinationDetails.this);
+        dialog.setView(dialogLayout);
+        dialog.setTitle(R.string.select_origin);
+        originTitle = (DelayAutoCompleteTextView) dialogLayout.findViewById(R.id.origin);
+        originTitle.setAdapter(new AutoCompleteAdapter(this)); // 'this' is Activity instance
+        originTitle.setLoadingIndicator(
+                (android.widget.ProgressBar) findViewById(R.id.origin_loading_indicator));
+        originTitle.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                AutoCompleteSuggest title = (AutoCompleteSuggest) adapterView.getItemAtPosition(position);
+                originTitle.setText(title.getDestinationName());
+                originXid = title.getXid();
+            }
+        });
+        // set the custom dialog components - text, image and button
+        // if button is clicked, close the custom dialog
+        dialog.setPositiveButton(R.string.go, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(DestinationDetails.this, DestinationRoute.class);
+                intent.putExtra("ORIGIN_XID", originXid);
+                intent.putExtra("DESTINATION_XID", detail.getXid());
+                intent.putExtra("DESTINATION_IMAGE", detail.getKeyImageUrl());
+                intent.putExtra("DESTINATION_NAME", detail.getName());
+                startActivity(intent);
+            }
+        });
+
+        dialog.show();
     }
 
     public void showLocationOnMap(View view) {

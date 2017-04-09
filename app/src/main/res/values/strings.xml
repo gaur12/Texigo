@@ -6,4 +6,6 @@
     <string name="how_to_raech">How To Reach</string>
     <string name="why_to_visit">Why To Visit</string>
     <string name="coming_soon">Comin Soon...</string>
+    <string name="select_origin">Select place to depart</string>
+    <string name="go">Go</string>
 </resources>
